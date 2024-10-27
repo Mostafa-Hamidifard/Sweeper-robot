@@ -1,2 +1,2 @@
 # Sweeper-robot
-To be written in the near future
+Controlling a sweeper robot for cleaning buildings exterior
