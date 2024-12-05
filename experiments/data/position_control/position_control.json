@@ -1,0 +1,30 @@
+[
+    {
+        "experiment_name": "position_control",
+        "time": "2024-11-28 13:22:05.419146",
+        "config": {
+            "brush_control": {
+                "speed": 0,
+                "off/on": 0
+            },
+            "desired_angle": {
+                "mode": 0.0,
+                "bais": 0,
+                "amp": 12.0,
+                "period": 12.0,
+                "bias": 12.0
+            },
+            "controller": {
+                "kp": 0.43,
+                "ki": 0.3,
+                "kd": 0.71
+            },
+            "frame": {
+                "mode": 0,
+                "bais": 0,
+                "amp": 0,
+                "period": 0
+            }
+        }
+    }
+]

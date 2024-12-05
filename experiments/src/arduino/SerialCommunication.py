@@ -1,6 +1,8 @@
 import serial
 import time
 import threading
+import json
+from ..config import arduino_config
 
 
 class SerialCommunication:
@@ -9,7 +11,7 @@ class SerialCommunication:
         self.listener_thread = None
         self.connected = False
 
-    def connect(self, serial_port, baud_rate):
+    def connect(self, serial_port=arduino_config["port"], baud_rate=arduino_config["baudrate"]):
         self.serial_port = serial_port
         self.baud_rate = baud_rate
         try:
@@ -30,23 +32,27 @@ class SerialCommunication:
             else:
                 print("Connection wasn't established. try using connect manually...")
 
-    def send_value(self, vibration_list):
+    def send_value(self, dictionary: dict):
         if not hasattr(self, "ser"):
             print("Serial communication has not been initialized.")
             return
-        ##### Write your own command string###############################################
-        input_string = ",".join(map(str, vibration_list)) + "\n"
-        # Send the string to the Arduino
-        self.ser.write(input_string.encode())
-        print(f"Sent from computer : {input_string}")
 
+        input_string = json.dumps(dictionary) + "\n"
+        # Send the string to the Arduino
+        encoded_text = input_string.encode("utf-8")
+        length = len(encoded_text)
+        chunk_len = 100
+        for i in range(length//chunk_len + 1):
+            print("sent:" ,encoded_text[i*chunk_len : (i+1)*chunk_len] )
+            self.ser.write(encoded_text[i*chunk_len : (i+1)*chunk_len])
+            time.sleep(0.5) # Assuming A delay of 1 second in the arduino
     def receive_data_thread_func(self, callback):
         while self.listening:
-            ##### Write your own command string###############################################
-            response = self.ser.readline().decode().strip()
+            response = self.ser.readline().decode()
             if response:
-                print(f"Arduino response: {response}")
-                callback(response)
+                print(f"Arduino response: \n{response}")
+                if callback != None:
+                    callback(response)
 
     def start_listening(self, callback):
         if not hasattr(self, "ser"):
@@ -69,8 +75,8 @@ class SerialCommunication:
 
     def close(self):
         if hasattr(self, "ser"):
-            # Send Neutral Value#########################################################
             self.stop_listening()
             self.ser.close()
+            print("connection closed")
         else:
             print("Serial communication has not been initialized.")

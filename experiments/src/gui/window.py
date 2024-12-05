@@ -96,7 +96,7 @@ class Window_manager(ABC):
             if transition_id is not None:
                 self.transit_window(transition_id)
         for window in self.windows:
-            window.window.close()
+            window.close()
         del self.windows
 
     def check_transition(self) -> Union[None, int]:
